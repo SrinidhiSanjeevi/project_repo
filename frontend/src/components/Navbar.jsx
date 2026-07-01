@@ -109,10 +109,12 @@ export default function Navbar({ activeTab, setActiveTab, user, onLogout }) {
           >
             {user?.name?.substring(0, 2).toUpperCase() || "US"}
           </div>
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <span style={{ fontSize: "0.85rem", fontWeight: 700 }}>{user?.name || "User"}</span>
-            <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>Member</span>
-          </div>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <span style={{ fontSize: "0.85rem", fontWeight: 700 }}>{user?.name || "User"}</span>
+              <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
+                {user?.role === "admin" ? "Admin" : "Member"}
+              </span>
+            </div>
         </div>
 
         <button

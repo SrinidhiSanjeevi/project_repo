@@ -89,8 +89,12 @@ const login = async (req, res) => {
        success: true,
        token,
        user: {
+         id: user._id,
          name: user.name,
-         email: user.email
+         email: user.email,
+         role: user.role,
+         phone: user.phone || "",
+         address: user.address || ""
        }
      });
 

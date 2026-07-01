@@ -1,5 +1,7 @@
 const Service = require("../models/Service");
 const Professional = require("../models/Professional");
+const User = require("../models/User");
+const bcrypt = require("bcryptjs");
 
 // GET ALL SERVICES
 const getServices = async (req, res) => {
@@ -28,6 +30,21 @@ const getProfessionals = async (req, res) => {
 // SEED DATABASE FUNCTION
 const seedDatabase = async () => {
   try {
+    // ── Seed Admin User (only if none exists) ──────────────────────────
+    const adminExists = await User.findOne({ role: "admin" });
+    if (!adminExists) {
+      const hashedPassword = await bcrypt.hash("Admin@123", 10);
+      await User.create({
+        name: "Admin",
+        email: "admin@homeease.com",
+        password: hashedPassword,
+        role: "admin"
+      });
+      console.log("✅ Admin user seeded → admin@homeease.com / Admin@123");
+    } else {
+      console.log("ℹ️  Admin user already exists, skipping admin seed.");
+    }
+
     // Clear and seed services database
     await Service.deleteMany({});
     console.log("Seeding services database...");

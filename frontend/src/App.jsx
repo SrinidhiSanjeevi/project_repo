@@ -4,6 +4,7 @@ import Dashboard from "./pages/Dashboard";
 import Bookings from "./pages/Bookings";
 import Emergency from "./pages/Emergency";
 import Profile from "./pages/Profile";
+import AdminDashboard from "./pages/AdminDashboard";
 import Navbar from "./components/Navbar";
 import BookingModal from "./components/BookingModal";
 import Toast from "./components/Toast";
@@ -226,6 +227,18 @@ export default function App() {
           <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
         )}
         <Auth onLoginSuccess={handleLoginSuccess} showToast={showToast} />
+      </>
+    );
+  }
+
+  // ADMIN PANEL ROUTER — full screen admin dashboard
+  if (user?.role === "admin") {
+    return (
+      <>
+        {toast && (
+          <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
+        )}
+        <AdminDashboard token={token} user={user} onLogout={handleLogout} />
       </>
     );
   }
