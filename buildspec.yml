@@ -1,0 +1,22 @@
+version: 0.2
+
+phases:
+pre_build:
+commands:
+- aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 226236025590.dkr.ecr.ap-south-1.amazonaws.com
+
+build:
+commands:
+- docker build -t homeservice-backend-v2 ./backend
+- docker build -t homeservice-frontend-v2 ./frontend
+
+```
+  - docker tag homeservice-backend-v2:latest 226236025590.dkr.ecr.ap-south-1.amazonaws.com/homeservice-backend-v2:latest
+
+  - docker tag homeservice-frontend-v2:latest 226236025590.dkr.ecr.ap-south-1.amazonaws.com/homeservice-frontend-v2:latest
+```
+
+post_build:
+commands:
+- docker push 226236025590.dkr.ecr.ap-south-1.amazonaws.com/homeservice-backend-v2:latest
+- docker push 226236025590.dkr.ecr.ap-south-1.amazonaws.com/homeservice-frontend-v2:latest
