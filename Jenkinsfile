@@ -1,8 +1,3 @@
-// =====================================================
-// HomeEase - Jenkins CI/CD Pipeline
-// Builds, tests, pushes to ECR, deploys to ECS
-// =====================================================
-
 pipeline {
 
     agent any
@@ -15,32 +10,25 @@ pipeline {
     }
 
     environment {
-        // AWS Configuration
         AWS_REGION        = "ap-south-1"
         AWS_ACCOUNT_ID    = "226236025590"
 
-        // ECR Repository URIs
         BACKEND_REPO      = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/homeease-backend"
         FRONTEND_REPO     = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/homeease-frontend"
 
-        // ECS Cluster & Services
         ECS_CLUSTER       = "homeease-cluster"
         BACKEND_SERVICE   = "homeease-backend-service"
         FRONTEND_SERVICE  = "homeease-frontend-service"
 
-        // Image tag: short commit SHA
         IMAGE_TAG         = "${GIT_COMMIT.take(8)}"
 
-        // Docker image names
         BACKEND_IMAGE     = "${BACKEND_REPO}:${IMAGE_TAG}"
         FRONTEND_IMAGE    = "${FRONTEND_REPO}:${IMAGE_TAG}"
     }
 
     stages {
 
-        // --------------------------------------------------
         stage('Checkout') {
-        // --------------------------------------------------
             steps {
                 echo "=== Checking out source code ==="
                 checkout scm
@@ -52,9 +40,8 @@ pipeline {
             }
         }
 
-        // --------------------------------------------------
+     
         stage('Validate Environment') {
-        // --------------------------------------------------
             steps {
                 sh '''
                 echo "=== Tool Versions ==="
@@ -69,9 +56,8 @@ pipeline {
             }
         }
 
-        // --------------------------------------------------
+       
         stage('Verify AWS Identity') {
-        // --------------------------------------------------
             steps {
                 sh '''
                 export AWS_PAGER=""
@@ -81,9 +67,8 @@ pipeline {
             }
         }
 
-        // --------------------------------------------------
+      
         stage('Install & Test Backend') {
-        // --------------------------------------------------
             steps {
                 dir('backend') {
                     sh '''
@@ -97,9 +82,7 @@ pipeline {
             }
         }
 
-        // --------------------------------------------------
         stage('Install & Build Frontend') {
-        // --------------------------------------------------
             steps {
                 dir('frontend') {
                     sh '''
@@ -116,9 +99,8 @@ pipeline {
             }
         }
 
-        // --------------------------------------------------
+    
         stage('Login to Amazon ECR') {
-        // --------------------------------------------------
             steps {
                 sh '''
                 echo "=== Authenticating Docker with Amazon ECR ==="
@@ -131,9 +113,7 @@ pipeline {
             }
         }
 
-        // --------------------------------------------------
         stage('Build Docker Images') {
-        // --------------------------------------------------
             parallel {
 
                 stage('Build Backend Image') {
@@ -162,9 +142,7 @@ pipeline {
             }
         }
 
-        // --------------------------------------------------
         stage('Verify Local Images') {
-        // --------------------------------------------------
             steps {
                 sh '''
                 echo "=== Built Images ==="
@@ -173,9 +151,8 @@ pipeline {
             }
         }
 
-        // --------------------------------------------------
+        
         stage('Push to Amazon ECR') {
-        // --------------------------------------------------
             parallel {
 
                 stage('Push Backend') {
@@ -200,9 +177,7 @@ pipeline {
             }
         }
 
-        // --------------------------------------------------
         stage('Verify ECR Images') {
-        // --------------------------------------------------
             steps {
                 sh """
                 echo "=== Verifying Backend in ECR ==="
@@ -220,9 +195,8 @@ pipeline {
             }
         }
 
-        // --------------------------------------------------
+        
         stage('Deploy to ECS') {
-        // --------------------------------------------------
             when {
                 branch 'main'
             }
@@ -258,11 +232,11 @@ pipeline {
     post {
 
         success {
-            echo "✅ HomeEase Pipeline SUCCEEDED — Build #${BUILD_NUMBER} | Tag: ${IMAGE_TAG}"
+            echo "HomeEase Pipeline SUCCEEDED — Build #${BUILD_NUMBER} | Tag: ${IMAGE_TAG}"
         }
 
         failure {
-            echo "❌ HomeEase Pipeline FAILED — Build #${BUILD_NUMBER} | Check logs!"
+            echo "HomeEase Pipeline FAILED — Build #${BUILD_NUMBER} | Check logs!"
         }
 
         always {

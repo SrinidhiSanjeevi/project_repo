@@ -1,17 +1,11 @@
 version: "3.9"
 
-# =====================================================
-# HomeEase - Docker Compose (Local Development)
-# Services: backend (Node/Express) + frontend (Nginx)
-# =====================================================
-
 networks:
   homeease-net:
     driver: bridge
 
 services:
 
-  # ---- Backend: Node.js Express API ----
   backend:
     build:
       context: ./backend
@@ -42,7 +36,7 @@ services:
       start_period: 20s
       retries: 3
 
-  # ---- Frontend: React (Vite) served via Nginx ----
+  
   frontend:
     build:
       context: ./frontend
